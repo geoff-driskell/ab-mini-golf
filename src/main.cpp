@@ -14,6 +14,8 @@
 ********************************************************************************************/
 
 #include "raylib-cpp.hpp"
+#include "Physics/PhysicsEngine.hpp"
+#include "scene.hpp"
 
 //----------------------------------------------------------------------------------
 // Global Variables Definition
@@ -23,10 +25,7 @@ int screenHeight = 450;
 
 const int max_columns = 20;
 
-//----------------------------------------------------------------------------------
-// Module Functions Declaration
-//----------------------------------------------------------------------------------
-void UpdateDrawFrame(raylib::Camera camera);     // Update and Draw one frame
+
 
 //----------------------------------------------------------------------------------
 // Main Enry Point
@@ -37,7 +36,20 @@ int main()
     //--------------------------------------------------------------------------------------
     raylib::Window window(screenWidth, screenHeight, "raylib-cpp [core] example - basic window");
 
-    raylib::Vector3 ballPosition(0.0f, 0.5f, 0.0f);
+    float ballInitialHeight = 15.0f;
+    raylib::Vector3 ballPosition(0.0f, ballInitialHeight, 0.0f);
+    raylib::Vector3 ballVelocity(0.5f, 0.0f, 0.0f);
+
+    const raylib::Vector3 floorPosition(0.0f, 0.0f, 0.0f);
+    const raylib::Vector3 floorDimensions(5.0f, 1.0f, 5.0f);
+
+    PhysicsEngine physicsEngine{};
+
+    physicsEngine.initialise();
+    physicsEngine.create_floor(floorDimensions, floorPosition);
+    physicsEngine.create_ball(0.84f, ballPosition, ballVelocity);
+
+    physicsEngine.start_simulation();
 
     raylib::Camera camera;
     camera.position = raylib::Vector3(0.0f, 2.0f, 4.0f);
@@ -56,6 +68,7 @@ int main()
     // Main game loop
     while (!window.ShouldClose())    // Detect window close button or ESC key
     {
+        const float frameTime(GetFrameTime());
         if (raylib::Keyboard::IsKeyDown(84)) {
             ballPosition.z += 0.5f;
         }
@@ -63,43 +76,10 @@ int main()
         BeginDrawing();
 
             ClearBackground(RAYWHITE);
-
-            BeginMode3D(camera);
-
-                DrawPlane((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector2){ 32.0f, 32.0f }, GREEN); // Draw ground
-                DrawCube((Vector3){ -16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, BLUE);     // Draw a blue wall
-                DrawCube((Vector3){ 16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, LIME);      // Draw a green wall
-                DrawCube((Vector3){ 0.0f, 2.5f, 16.0f }, 32.0f, 5.0f, 1.0f, GOLD);      // Draw a yellow wall
-
-                // draw golf ball
-                
-                DrawSphere(ballPosition, 0.5f, WHITE);
-
-            EndMode3D();
-
-            // Draw info boxes
-            DrawRectangle(5, 5, 330, 100, Fade(SKYBLUE, 0.5f));
-            DrawRectangleLines(5, 5, 330, 100, BLUE);
-
-            DrawText("Camera controls:", 15, 15, 10, BLACK);
-            DrawText("- Move keys: W, A, S, D, Space, Left-Ctrl", 15, 30, 10, BLACK);
-            DrawText("- Look around: arrow keys or mouse", 15, 45, 10, BLACK);
-            DrawText("- Camera mode keys: 1, 2, 3, 4", 15, 60, 10, BLACK);
-            DrawText("- Zoom keys: num-plus, num-minus or mouse scroll", 15, 75, 10, BLACK);
-            DrawText("- Camera projection key: P", 15, 90, 10, BLACK);
-
-            DrawRectangle(600, 5, 195, 100, Fade(SKYBLUE, 0.5f));
-            DrawRectangleLines(600, 5, 195, 100, BLUE);
-
-            DrawText("Camera status:", 610, 15, 10, BLACK);
-            DrawText("- Mode: FIRST_PERSON", 610, 30, 10, BLACK);
-            DrawText(TextFormat("- Projection: %s", (camera.projection == CAMERA_PERSPECTIVE) ? "PERSPECTIVE" :
-                                                    (camera.projection == CAMERA_ORTHOGRAPHIC) ? "ORTHOGRAPHIC" : "CUSTOM"), 610, 45, 10, BLACK);
-            DrawText(TextFormat("- Position: (%06.3f, %06.3f, %06.3f)", camera.position.x, camera.position.y, camera.position.z), 610, 60, 10, BLACK);
-            DrawText(TextFormat("- Target: (%06.3f, %06.3f, %06.3f)", camera.target.x, camera.target.y, camera.target.z), 610, 75, 10, BLACK);
-            DrawText(TextFormat("- Up: (%06.3f, %06.3f, %06.3f)", camera.up.x, camera.up.y, camera.up.z), 610, 90, 10, BLACK);
+            drawFrame(camera, ballPosition, WHITE);
 
         EndDrawing();
+        physicsEngine.update(frameTime, ballPosition);
     }
 
 
