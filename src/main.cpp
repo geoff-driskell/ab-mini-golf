@@ -13,11 +13,7 @@
 *
 ********************************************************************************************/
 
-#include "Camera3D.hpp"
-#include "Color.hpp"
-#include "Vector3.hpp"
 #include "raylib-cpp.hpp"
-#include <raylib.h>
 
 //----------------------------------------------------------------------------------
 // Global Variables Definition
@@ -41,14 +37,16 @@ int main()
     //--------------------------------------------------------------------------------------
     raylib::Window window(screenWidth, screenHeight, "raylib-cpp [core] example - basic window");
 
+    raylib::Vector3 ballPosition(0.0f, 0.5f, 0.0f);
+
     raylib::Camera camera;
     camera.position = raylib::Vector3(0.0f, 2.0f, 4.0f);
-    camera.target = raylib::Vector3(0.0f, 2.0f, 0.0f);
+    camera.target = ballPosition;
     camera.up = raylib::Vector3(0.0f, 1.0f, 0.0f);
     camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
 
-    int cameraMode = CAMERA_FIRST_PERSON;
+    int cameraMode = CAMERA_THIRD_PERSON;
 
     DisableCursor();
 
@@ -58,6 +56,9 @@ int main()
     // Main game loop
     while (!window.ShouldClose())    // Detect window close button or ESC key
     {
+        if (raylib::Keyboard::IsKeyDown(84)) {
+            ballPosition.z += 0.5f;
+        }
         UpdateCamera(&camera, cameraMode);                  // Update camera
         BeginDrawing();
 
@@ -71,7 +72,8 @@ int main()
                 DrawCube((Vector3){ 0.0f, 2.5f, 16.0f }, 32.0f, 5.0f, 1.0f, GOLD);      // Draw a yellow wall
 
                 // draw golf ball
-                DrawSphere(raylib::Vector3(0.0f, 0.5f, 0.0f), 0.5f, WHITE);
+                
+                DrawSphere(ballPosition, 0.5f, WHITE);
 
             EndMode3D();
 
