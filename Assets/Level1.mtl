@@ -1,0 +1,6 @@
+# Created by Kenney (www.kenney.nl)
+
+newmtl Level1
+Kd 1 1 1
+map_Kd Textures/Level1.png
+
