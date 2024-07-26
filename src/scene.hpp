@@ -3,6 +3,6 @@
 
 #include <raylib-cpp.hpp>
 
-void drawFrame(const raylib::Camera& camera, const raylib::Vector3& ballPosition, const raylib::Color& ballColor);
+void drawFrame(const raylib::Camera& camera, raylib::Model& model, const raylib::Vector3& ballPosition, const raylib::Color& ballColor);
 
 #endif // SCENE_HPP

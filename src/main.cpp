@@ -51,16 +51,13 @@ int main()
 
     physicsEngine.start_simulation();
 
-    raylib::Camera camera;
-    camera.position = raylib::Vector3(0.0f, 2.0f, 4.0f);
-    camera.target = ballPosition;
-    camera.up = raylib::Vector3(0.0f, 1.0f, 0.0f);
-    camera.fovy = 60.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+    // Define the camera to look into our 3d world
+    Camera camera = { { 0.0f, 10.0f, 10.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, 45.0f, CAMERA_PERSPECTIVE };
 
-    int cameraMode = CAMERA_THIRD_PERSON;
+    raylib::Model model = LoadModel(ASSETS_PATH"ball-blue.obj");
+    raylib::Texture2D texture = LoadTexture(ASSETS_PATH"Textures/colormap.png");
 
-    DisableCursor();
+    //DisableCursor();
 
     SetTargetFPS(60);   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -72,11 +69,11 @@ int main()
         if (raylib::Keyboard::IsKeyDown(84)) {
             ballPosition.z += 0.5f;
         }
-        UpdateCamera(&camera, cameraMode);                  // Update camera
+        UpdateCamera(&camera, CAMERA_ORTHOGRAPHIC);                  // Update camera
         BeginDrawing();
 
             ClearBackground(RAYWHITE);
-            drawFrame(camera, ballPosition, WHITE);
+            drawFrame(camera, model, ballPosition, WHITE);
 
         EndDrawing();
         physicsEngine.update(frameTime, ballPosition);

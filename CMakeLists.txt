@@ -91,6 +91,11 @@ set(USE_TZCNT ON)
 set(USE_F16C ON)
 set(USE_FMADD ON)
 
+set(GAME_RESOURCES)
+
+file(GLOB resources ${CMAKE_SOURCE_DIR}/Assets/*)
+list(APPEND GAME_RESOURCES ${resources})
+
 # This is the main part:
 set(SOURCES 
     src/main.cpp
@@ -104,3 +109,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 target_link_libraries(${PROJECT_NAME} PUBLIC raylib raylib_cpp Jolt)
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
+
+# Setting ASSETS_PATH
+target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/Assets/") # Set the asset path macro to the absolute path on the dev machine
+#target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="./Assets") # Set the asset path macro in release mode to a relative path that assumes the assets folder is in the same directory as the game executable
