@@ -1,36 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
-project(raylib_cpp_example)
+project(ab-mini-golf)
 
 # Add this line, to enable compile command export
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# raylib
-find_package(raylib QUIET)
-if (NOT raylib_FOUND)
-    include(FetchContent)
-    FetchContent_Declare(
-        raylib
-        GIT_REPOSITORY https://github.com/raysan5/raylib.git
-        GIT_TAG 5.0
-        GIT_SHALLOW 1
-    )
-    FetchContent_MakeAvailable(raylib)
-endif()
-
-# raylib-cpp
-find_package(raylib_cpp QUIET)
-if (NOT raylib_cpp_FOUND)
-    if (NOT DEFINED RAYLIB_CPP_VERSION)
-        set(RAYLIB_CPP_VERSION v5.0.2)
-    endif()
-    include(FetchContent)
-    FetchContent_Declare(
-        raylib_cpp
-        GIT_REPOSITORY https://github.com/RobLoach/raylib-cpp.git
-        GIT_TAG ${RAYLIB_CPP_VERSION}
-    )
-    FetchContent_MakeAvailable(raylib_cpp)
-endif()
 
 # jolt-physics
 find_package(JoltPhysics QUIET)
@@ -44,6 +16,18 @@ if (NOT JoltPhysics_FOUND)
         SOURCE_SUBDIR Build
     )
     FetchContent_MakeAvailable(JoltPhysics)
+endif()
+
+find_package(Flecs QUIET)
+if (NOT Flecs_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+        Flecs
+        GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
+        GIT_TAG v4.0.0
+        GIT_SHALLOW 1
+    )
+    FetchContent_MakeAvailable(Flecs)
 endif()
 
 ## Jolt Config
@@ -99,15 +83,10 @@ list(APPEND GAME_RESOURCES ${resources})
 # This is the main part:
 set(SOURCES 
     src/main.cpp
-    src/scene.cpp
-    src/Physics/BodyActivationListener.cpp
-    src/Physics/ContactListenerImpl.cpp
-    src/Physics/GolfBall.cpp
-    src/Physics/PhysicsEngine.cpp
 )
 add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
-target_link_libraries(${PROJECT_NAME} PUBLIC raylib raylib_cpp Jolt)
+target_link_libraries(${PROJECT_NAME} PUBLIC Jolt flecs::flecs_static)
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
 
 # Setting ASSETS_PATH
